@@ -1,0 +1,16 @@
+<div>
+  <div *ngIf="info?.message" class="message">
+    <span>{{info.message}}</span>
+    <button (click)="handleResponse()">ok</button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="singIn()" *ngIf="!info?.message">
+    <label>
+      <input type="email" formControlName="email" [ngClass]="{'error': email.invalid}"> email
+    </label>
+    <label>
+      <input type="text" minLength="7" formControlName="password" [ngClass]="{'error': password.invalid}"> password
+    </label>
+    <button type="submit" [disabled]="!form.valid">Sign in</button>
+  </form>
+</div>
+
