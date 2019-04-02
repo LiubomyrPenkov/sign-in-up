@@ -1,3 +1,35 @@
-<p>
-  user-page works!
-</p>
+<button mat-raised-button routerLink="/sign-in" color="warn" (click)="logOut()">Log out</button>
+<mat-card>
+  <mat-card-title>User info:</mat-card-title>
+  <mat-card-content>
+    <p>Login: {{user.username}}</p>
+    <div>
+      <p *ngIf="!editMode || user.role === 'user'">Role: {{user.role}}</p>
+  
+      <div *ngIf="editMode && user.role === 'admin'">
+        <span>Role: </span>
+        <select [(ngModel)]="user.role">
+          <option *ngFor="let role of roles" [ngValue]="role">{{ role }}</option>
+        </select>
+      </div>
+    </div>
+    
+    <div>
+      <p *ngIf="!editMode">Password: ******</p>
+      <div *ngIf="editMode">
+        <label>
+          <p>Old password: </p>
+          <input type="password" [(ngModel)]="confirmPassword"> <span *ngIf="confirmPasswordFailed">Wrong password</span>
+        </label>
+        <label>
+          <p>New password: (should include at least 3 characters)</p>
+          <input type="password" [(ngModel)]="newPassword">
+        </label>
+      </div>
+    </div>
+  </mat-card-content>
+  
+  <button (click)="editUser()" *ngIf="!editMode" mat-raised-button>Edit</button>
+  <button (click)="save()" *ngIf="editMode" [disabled]="newPassword?.length <= 3" mat-raised-button color="primary">Save</button>
+  <button (click)="cancel()" *ngIf="editMode" mat-raised-button color="warn">Cancel</button>
+</mat-card>

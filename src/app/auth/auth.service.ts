@@ -1,50 +1,39 @@
 import { Injectable } from '@angular/core';
+import { UserService } from '../user-service/user.service';
+import { User } from '../interfaces/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
-  singUp(username:String, password: String, role: String) {
-    let users: any = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find((user)=>{
-      return user.username === username;
-    });
-
-    if (user) {
-      return {
-        message: 'User already exists, please sing in',
-        exist: true
-      };
+  singUp(username:String, password: String, role: ['user', 'admin']) {
+    const user = this.userService.getUser(username);
+    if (!user) {
+      return this.userService.setUser({username, password, role});
     } else {
-      users.push({username, password, role});
-      localStorage.setItem('users', JSON.stringify(users));
-      return {
-        message: 'User is created',
-        created: true,
-        role: role 
-      }
+      return false;
     }
   }
 
-  singIn(username:String, password: String) {
-    let users: any = JSON.parse(localStorage.getItem('users')) || [];
-    const user = users.find((user)=>{
-      return user.username === username && user.password === password;
-    });
+  singIn(username: String, password: String): void{
+    const user: User = this.userService.getUser(username, password);
     if (user) {
-      return {
-        success: true,
-        role: user.role 
-      }
-    } else {
-      return {
-        message: 'Incorrect credentials',
-        error: true
-      }
+      this.setToken(user);
     }
   }
 
+  getToken(): any {
+    return JSON.parse(localStorage.getItem('token'));
+  }
+
+  setToken(user: User): void {
+    localStorage.setItem('token', JSON.stringify(user));
+  }
+
+  removeToken(): void {
+    localStorage.removeItem('token');
+  }
 }

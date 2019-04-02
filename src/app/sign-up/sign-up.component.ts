@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service.js';
+import { User } from '../interfaces/user';
 
 @Component({
   selector: 'app-sign-up',
@@ -13,11 +14,11 @@ export class SignUpComponent implements OnInit {
   email: AbstractControl;
   password: AbstractControl;
   role: AbstractControl;
-  info: any;
+  message: String;
 
   roles: string[] = ['user', 'admin'];
 
-  constructor(private fb: FormBuilder, private AuthService: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -32,18 +33,24 @@ export class SignUpComponent implements OnInit {
   }
 
   save(): void {
-    const response = this.AuthService.singUp(this.email.value, this.password.value, this.role.value);
-    this.info = response;
+    const user = this.authService.singUp(this.email.value, this.password.value, this.role.value);
+    if (user) {
+      this.authService.setToken(user);
+      this.message = 'User created';
+    } else {
+      this.message = 'User already exists';
+    }
     this.password.reset();
     this.email.reset();    
   }
 
   handleResponse() {
-    this.info.message = null;
-    if (this.info.exist) {
+    this.message = null;
+    let token: User = this.authService.getToken();
+    if (token) {
+      this.router.navigate([token.role]);
+    } else {
       this.router.navigate(['sign-in']);
-    } else if (this.info.created) {
-      this.router.navigate([this.info.role])
     }
   }
 

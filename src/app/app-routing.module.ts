@@ -6,6 +6,7 @@ import { SignUpComponent } from './sign-up/sign-up.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { UserPageComponent } from './user-page/user-page.component';
+import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   {
@@ -16,11 +17,13 @@ const routes: Routes = [
     component: SignUpComponent
   }, {
     path: 'admin',
-    component: AdminPageComponent
+    component: AdminPageComponent,
+    canActivate: [AuthGuard]
   }, {
-    path: 'user',
-    component: UserPageComponent  
-  }, {
+  //   path: 'user',
+  //   component: UserPageComponent,
+  //   canActivate: [AuthGuard]  
+  // }, {
     path: '',
     redirectTo: 'sign-in',
     pathMatch: 'full'

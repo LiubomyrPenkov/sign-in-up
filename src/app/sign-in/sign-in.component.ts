@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { AuthService } from '../auth/auth.service.js';
-import { Router } from '@angular/router';
+import { User } from '../interfaces/user';
 
 @Component({
   selector: 'app-sign-in',
@@ -12,9 +13,9 @@ export class SignInComponent implements OnInit {
   form: FormGroup;
   email: AbstractControl;
   password: AbstractControl;
-  info: any;
+  message: String;
 
-  constructor(private fb: FormBuilder, private AuthService: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
 
   ngOnInit() {
     this.form = this.fb.group({
@@ -27,19 +28,18 @@ export class SignInComponent implements OnInit {
   }
 
   singIn(): void {
-    this.info = this.AuthService.singIn(this.email.value, this.password.value);
-    if (this.info.success) {
-      this.router.navigate([this.info.role])
+    this.authService.singIn(this.email.value, this.password.value);
+    let token: User = this.authService.getToken();
+    if (token) {
+      this.router.navigate([token.role]);
+    } else {
+      this.message = 'Incorrect credentials';
     }
   }
 
   handleResponse() {
-    this.info.message = null;
-    this.password.reset();
-    this.email.reset();    
-    if (this.info.error){
-      this.router.navigate(['sign-in']);
-    }
+    this.message = null;
+    this.form.reset();
   }
 
 }

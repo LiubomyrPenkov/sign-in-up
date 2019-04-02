@@ -1,18 +1,24 @@
-<div>
-  <div *ngIf="info?.message" class="message">
-    <span>{{info.message}}</span>
-    <button (click)="handleResponse()">ok</button>
+<mat-card>
+  <mat-card-content *ngIf="message" class="message">
+    <mat-card-subtitle>{{message}}</mat-card-subtitle>
+    <button (click)="handleResponse()" mat-raised-button>ok</button>
+  </mat-card-content>
+  <div *ngIf="!message">
+    <button routerLink="/sign-in" routerLinkActive="active" mat-raised-button>Sign In</button>
+
+    <form [formGroup]="form" (ngSubmit)="save()">
+      <mat-form-field class="example-full-width">
+        <input type="email" formControlName="email" matInput placeholder="email"> 
+      </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <input type="password" minLength="7" formControlName="password" matInput placeholder="password">
+      </mat-form-field>
+      <mat-form-field>
+        <mat-select formControlName="role">
+          <mat-option *ngFor="let role of roles" [value]="role">{{ role }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button type="submit" [disabled]="!form.valid" mat-raised-button>Submit</button>
+    </form>
   </div>
-  <form [formGroup]="form" (ngSubmit)="save()" *ngIf="!info?.message">
-    <label>
-        <input type="email" formControlName="email" [ngClass]="{'error': email.invalid}"> email
-    </label>
-    <label>
-      <input type="text" minLength="7" formControlName="password" [ngClass]="{'error': password.invalid}"> password
-    </label>
-    <select formControlName="role">
-      <option *ngFor="let role of roles" [ngValue]="role">{{ role }}</option>
-    </select>
-    <button type="submit" [disabled]="!form.valid">Sign up</button>
-  </form>
-</div>
+</mat-card>
